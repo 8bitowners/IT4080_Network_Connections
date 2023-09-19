@@ -7,6 +7,8 @@ public class Arena1Game : NetworkBehaviour
 {
 
     public Player playerPrefab;
+
+    public Player hostPrefab;
     public Camera arenaCamera;
 
       private int positionIndex = 0;
@@ -54,11 +56,25 @@ public class Arena1Game : NetworkBehaviour
         return newColor;
     }
 
-    private void SpawnPlayers() {
+    private void SpawnPlayers() { 
+        
         foreach(ulong clientId in NetworkManager.ConnectedClientsIds) {
-            Player playerSpawn = Instantiate(playerPrefab, NextPosition(), Quaternion.identity);
-            playerSpawn.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-            playerSpawn.playerColorNetVar.Value = NextColor();
+            
+            //I feel like there was a better to way to get it to only alter the host, but I couldn't find it and this worked
+            if (clientId == 0) {
+                Player playerSpawn = Instantiate(hostPrefab, NextPosition(), Quaternion.identity);
+                playerSpawn.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
+                playerSpawn.playerColorNetVar.Value = NextColor(); 
+            }
+            
+            else {
+                Player playerSpawn = Instantiate(playerPrefab, NextPosition(), Quaternion.identity);
+                playerSpawn.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
+                playerSpawn.playerColorNetVar.Value = NextColor();
+            }
+            
+            // Debug.Log($"Hello #{clientId}");
+            
         }
     }
 }

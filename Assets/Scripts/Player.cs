@@ -7,7 +7,7 @@ public class Player : NetworkBehaviour
 {
      public float movementSpeed = 50f;
     public float rotationSpeed = 130f;
-    public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>(Color.red);
+    public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>(Color.blue);
 
     private Camera playerCamera; 
     private GameObject playerBody;
