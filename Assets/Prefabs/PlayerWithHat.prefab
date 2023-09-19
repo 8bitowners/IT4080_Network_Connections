@@ -205,6 +205,7 @@ GameObject:
   - component: {fileID: 7292517115557562899}
   - component: {fileID: 7081427309883389571}
   - component: {fileID: 6949314675567451388}
+  - component: {fileID: 2075038224519936307}
   m_Layer: 0
   m_Name: PlayerWithHat
   m_TagString: Player
@@ -225,6 +226,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8087289736664517083}
+  - {fileID: 5691044588343251045}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -240,6 +242,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3ec9a6b95b42d34393c766abc86e956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 50
+  rotationSpeed: 130
 --- !u!114 &6949314675567451388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,6 +264,36 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &2075038224519936307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3292695671369200534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &3465636114586789155
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,12 +417,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4082561397196503157}
   m_LocalRotation: {x: 0.09229593, y: 0.7010574, z: -0.09229593, w: 0.7010574}
-  m_LocalPosition: {x: -2.476, y: 1.671, z: 0}
+  m_LocalPosition: {x: -61.34012, y: 27.5005, z: 8.797047}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8087289736664517083}
-  m_RootOrder: 4
+  m_Father: {fileID: 7292517115557562899}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 15, y: 90, z: 0}
 --- !u!20 &7536129871985043015
 Camera:
@@ -552,7 +586,7 @@ GameObject:
   - component: {fileID: 8106004762578148455}
   - component: {fileID: 5175694451678165635}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: PlayerBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -574,7 +608,6 @@ Transform:
   - {fileID: 3202193093671824497}
   - {fileID: 5156106988276710406}
   - {fileID: 5994737767495777030}
-  - {fileID: 5691044588343251045}
   m_Father: {fileID: 7292517115557562899}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

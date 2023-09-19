@@ -17,6 +17,14 @@ public class Arena1Game : NetworkBehaviour
         new Vector3(0, 2, 4),
         new Vector3(0, 2, -4)
     };
+
+     private int colorIndex = 0;
+    private Color[] playerColors = new Color[] {
+        Color.blue,
+        Color.green,
+        Color.yellow,
+        Color.magenta,
+    };
     
     // Start is called before the first frame update
     void Start()
@@ -37,10 +45,20 @@ public class Arena1Game : NetworkBehaviour
         return pos;
     }
 
+    private Color NextColor() {
+        Color newColor = playerColors[colorIndex];
+        colorIndex += 1;
+        if (colorIndex > playerColors.Length - 1) {
+            colorIndex = 0;
+        }
+        return newColor;
+    }
+
     private void SpawnPlayers() {
         foreach(ulong clientId in NetworkManager.ConnectedClientsIds) {
             Player playerSpawn = Instantiate(playerPrefab, NextPosition(), Quaternion.identity);
             playerSpawn.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
+            playerSpawn.playerColor = NextColor();
         }
     }
 }
