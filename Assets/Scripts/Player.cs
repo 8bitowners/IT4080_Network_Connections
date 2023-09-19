@@ -7,9 +7,7 @@ public class Player : NetworkBehaviour
 {
      public float movementSpeed = 50f;
     public float rotationSpeed = 130f;
-    //public NetworkVariable<Color> playerColor = new NetworkVariable<Color>(Color.red);
-
-    public Color playerColor = Color.red;
+    public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>(Color.red);
 
     private Camera playerCamera; 
     private GameObject playerBody;
@@ -42,7 +40,7 @@ public class Player : NetworkBehaviour
     }
 
     private void ApplyColor() {
-        playerBody.GetComponent<MeshRenderer>().material.color = playerColor;
+        playerBody.GetComponent<MeshRenderer>().material.color = playerColorNetVar.Value;
     }
     [ServerRpc]
     private void MoveServerRpc(Vector3 movement, Vector3 rotation) {
