@@ -8,6 +8,8 @@ public class ChatServer : NetworkBehaviour
     public ChatUi chatUi; 
     const ulong SYSTEM_ID = ulong.MaxValue; 
     private ulong[] dmClientIds = new ulong[2];
+    private List<ulong> connectedUsers = new List<ulong>();
+    
 
 
     void Start()
@@ -20,6 +22,7 @@ public class ChatServer : NetworkBehaviour
             NetworkManager.OnClientDisconnectCallback += ServerOnClientDisconnected;
             if (IsHost) {
                 DisplayMessageLocally(SYSTEM_ID, $"You are the host AND client {NetworkManager.LocalClientId}");
+                connectedUsers.Add(NetworkManager.LocalClientId);
             } else {
                 DisplayMessageLocally(SYSTEM_ID, "You are the server");
             }
@@ -29,9 +32,19 @@ public class ChatServer : NetworkBehaviour
     }
 
     private void ServerOnClientConnected(ulong clientId) {
+        connectedUsers.Add(clientId);
+
         ServerSendDirectMessage("Welcome to the server!", SYSTEM_ID, clientId);
-        //DisplayMessageLocally(SYSTEM_ID, $"Client {NetworkManager.LocalClientId} has connected to the server");
         ReceiveChatMessageClientRpc($"Client {clientId} has connected to the server", SYSTEM_ID);
+
+        string serverContents = "The current server list is: ";
+        foreach (var x in connectedUsers) {
+            serverContents += ", " + x.ToString();
+            //the method for printing this could be way better, but this was just me making sure it printed correctly and likely isn't in the final submission anyways
+        }
+        
+        ReceiveChatMessageClientRpc(serverContents, SYSTEM_ID);
+
     }
 
     private void ServerOnClientDisconnected(ulong clientId) {
@@ -78,16 +91,21 @@ public class ChatServer : NetworkBehaviour
     }
 
     private void ServerSendDirectMessage(string message, ulong from, ulong to) {
-        dmClientIds[0] = from;
-        dmClientIds[1] = to; 
+        
+        bool targetExists = connectedUsers.Contains(to);
+        
+        if (targetExists == true) {
+            dmClientIds[0] = from;
+            dmClientIds[1] = to; 
 
-        ClientRpcParams rpcParams = default; 
-        rpcParams.Send.TargetClientIds = dmClientIds; 
+            ClientRpcParams rpcParams = default; 
+            rpcParams.Send.TargetClientIds = dmClientIds; 
 
-       // clientIds[0] = from; 
-       // ReceiveChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
-
-       // clientIds[0] = to; 
-        ReceiveChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
+            ReceiveChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
+        }
+        else {
+            ServerSendDirectMessage("Invalid target ID", SYSTEM_ID, from);
+        } 
+       
     }
 }
