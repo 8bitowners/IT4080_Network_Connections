@@ -7,6 +7,7 @@ public class ChatServer : NetworkBehaviour
 {
     public ChatUi chatUi; 
     const ulong SYSTEM_ID = ulong.MaxValue; 
+    private ulong[] dmClientIds = new ulong[2];
 
 
     void Start()
@@ -15,6 +16,7 @@ public class ChatServer : NetworkBehaviour
         chatUi.MessageEntered += OnChatUiMessageEntered;
 
         if (IsServer) {
+            NetworkManager.OnClientConnectedCallback += ServerOnClientConnected;
             if (IsHost) {
                 DisplayMessageLocally(SYSTEM_ID, $"You are the host AND client {NetworkManager.LocalClientId}");
             } else {
@@ -25,6 +27,9 @@ public class ChatServer : NetworkBehaviour
         }
     }
 
+    private void ServerOnClientConnected(ulong clientId) {
+    //    ServerSendDirectMessage($"I ({NetworkManager.LocalClientId}) see you ({clientId}) have connected to the server, well done.", NetworkManager.LocalClientId, clientId);
+    }
     private void DisplayMessageLocally(ulong from, string message) {
         string fromStr = $"Player {from}";
         Color textColor = chatUi.defaultTextColor;
@@ -45,7 +50,18 @@ public class ChatServer : NetworkBehaviour
 
     [ServerRpc(RequireOwnership = false)]
     public void SendChatMessageServerRpc(string message, ServerRpcParams serverRpcParams = default) {
-        ReceiveChatMessageClientRpc(message, serverRpcParams.Receive.SenderClientId);
+        if (message.StartsWith("@")) {
+            string[] parts = message.Split(" ");
+            string clientIdStr = parts[0].Replace("@", "");
+            ulong toClientId = ulong.Parse(clientIdStr);
+
+            ServerSendDirectMessage(message, serverRpcParams.Receive.SenderClientId, toClientId);
+
+        } else {
+            ReceiveChatMessageClientRpc(message, serverRpcParams.Receive.SenderClientId);
+        }
+        
+        
     }
 
     [ClientRpc] 
@@ -53,4 +69,17 @@ public class ChatServer : NetworkBehaviour
         DisplayMessageLocally(from , message);
     }
 
+    private void ServerSendDirectMessage(string message, ulong from, ulong to) {
+        dmClientIds[0] = from;
+        dmClientIds[1] = to; 
+
+        ClientRpcParams rpcParams = default; 
+        rpcParams.Send.TargetClientIds = dmClientIds; 
+
+       // clientIds[0] = from; 
+       // ReceiveChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
+
+       // clientIds[0] = to; 
+        ReceiveChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
+    }
 }
