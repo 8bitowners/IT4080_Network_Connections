@@ -17,6 +17,7 @@ public class ChatServer : NetworkBehaviour
 
         if (IsServer) {
             NetworkManager.OnClientConnectedCallback += ServerOnClientConnected;
+            NetworkManager.OnClientDisconnectCallback += ServerOnClientDisconnected;
             if (IsHost) {
                 DisplayMessageLocally(SYSTEM_ID, $"You are the host AND client {NetworkManager.LocalClientId}");
             } else {
@@ -28,8 +29,15 @@ public class ChatServer : NetworkBehaviour
     }
 
     private void ServerOnClientConnected(ulong clientId) {
-    //    ServerSendDirectMessage($"I ({NetworkManager.LocalClientId}) see you ({clientId}) have connected to the server, well done.", NetworkManager.LocalClientId, clientId);
+        ServerSendDirectMessage("Welcome to the server!", SYSTEM_ID, clientId);
+        //DisplayMessageLocally(SYSTEM_ID, $"Client {NetworkManager.LocalClientId} has connected to the server");
+        ReceiveChatMessageClientRpc($"Client {clientId} has connected to the server", SYSTEM_ID);
     }
+
+    private void ServerOnClientDisconnected(ulong clientId) {
+        ReceiveChatMessageClientRpc($"Client {clientId} has disconnected from the server", SYSTEM_ID);
+    }
+
     private void DisplayMessageLocally(ulong from, string message) {
         string fromStr = $"Player {from}";
         Color textColor = chatUi.defaultTextColor;
