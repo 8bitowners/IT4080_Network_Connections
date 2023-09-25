@@ -7,6 +7,7 @@ public class Player : NetworkBehaviour
 {
      public float movementSpeed = 50f;
     public float rotationSpeed = 130f;
+
     public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>(Color.blue);
 
     private Camera playerCamera; 
@@ -17,6 +18,7 @@ public class Player : NetworkBehaviour
         playerCamera.enabled = IsOwner;
         playerCamera.GetComponent<AudioListener>().enabled = IsOwner;
 
+        
         playerBody = transform.Find("PlayerBody").gameObject;
         ApplyColor();
     }
@@ -73,6 +75,14 @@ public class Player : NetworkBehaviour
         Vector3 moveVect = new Vector3(x_move, 0, z_move);
         moveVect *= movementSpeed * Time.deltaTime;
 
+        Vector3 movementRestrictionCheck = moveVect + transform.position;
+
+            if (movementRestrictionCheck.x >= 5 || movementRestrictionCheck.z >= 5 || movementRestrictionCheck.x <= -5 || movementRestrictionCheck.z <= -5) {
+            return Vector3.zero;
+        } 
+        
+
+        
         return moveVect;
     }
 }
