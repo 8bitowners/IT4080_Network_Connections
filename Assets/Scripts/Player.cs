@@ -13,21 +13,40 @@ public class Player : NetworkBehaviour
     private Camera playerCamera; 
     private GameObject playerBody;
 
-    private void Start() {
+   private void NetworkInit() {
+    playerBody = transform.Find("PlayerBody").gameObject;
+        
         playerCamera = transform.Find("Camera").GetComponent<Camera>();
         playerCamera.enabled = IsOwner;
         playerCamera.GetComponent<AudioListener>().enabled = IsOwner;
 
-        
-        playerBody = transform.Find("PlayerBody").gameObject;
-        ApplyColor();
+         ApplyColor();
+         playerColorNetVar.OnValueChanged += OnPlayerColorChanged; 
+
+   }
+   
+    private void Awake() {
+        NetworkHelper.Log(this, "Awake");
+    }
+
+    private void Start() {
+        NetworkHelper.Log(this, "Start");
+    }
+
+    public override void OnNetworkSpawn() {
+        NetworkHelper.Log(this, "OnNetworkSpawn");
+        NetworkInit();
+        base.OnNetworkSpawn();
     }
 
     private void Update() {
         if (IsOwner) {
             OwnerHandleInput();
-        }
-        
+        } 
+    }
+
+    public void OnPlayerColorChanged(Color previous, Color current) {
+        ApplyColor();
     }
    
     private void OwnerHandleInput() {
@@ -42,6 +61,7 @@ public class Player : NetworkBehaviour
     }
 
     private void ApplyColor() {
+        NetworkHelper.Log(this, $"Applying color {playerColorNetVar.Value}");
         playerBody.GetComponent<MeshRenderer>().material.color = playerColorNetVar.Value;
     }
     [ServerRpc]
@@ -81,9 +101,6 @@ public class Player : NetworkBehaviour
             if (movementRestrictionCheck.x >= 5 || movementRestrictionCheck.z >= 5 || movementRestrictionCheck.x <= -5 || movementRestrictionCheck.z <= -5) {
             return Vector3.zero;
         } 
-        
-
-        
         return moveVect;
     }
 }
