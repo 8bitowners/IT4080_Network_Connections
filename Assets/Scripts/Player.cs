@@ -51,6 +51,7 @@ public class Player : NetworkBehaviour
     }
 
     // Rotate around the y axis when shift is not pressed
+    
     private Vector3 CalcRotation() {
         bool isShiftKeyDown = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         Vector3 rotVect = Vector3.zero;
