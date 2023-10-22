@@ -87,7 +87,9 @@ public class Player : NetworkBehaviour
             //The "player other" line isn't working, and keeping it in is actually causing the destroy to not work, so I've commented it out.
             //Presumably if you see this comment I haven't figured out how to fix this.
 
-           // Player other = NetworkManager.Singleton.ConnectedClients[ownerId].PlayerObject.GetComponent<Player>();
+            Player other = NetworkManager.Singleton.ConnectedClients[ownerId].PlayerObject.GetComponent<Player>();
+           
+           // This remains commented out not because it didn't work, but because the above line doesn't right now, and I want to minimize potential issues
            // other.ScoreNetVar.Value += 1;
             
             Destroy(collision.gameObject);
