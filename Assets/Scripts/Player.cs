@@ -67,6 +67,14 @@ public class Player : NetworkBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other) {
+        if(IsServer) {
+            if(other.CompareTag("power_up")) {
+                other.GetComponent<BasePowerUp>().ServerPickUp(this);
+            }
+        }
+    }
+
     private void ServerHandleCollision(Collision collision) {
         
         if(collision.gameObject.CompareTag("bullet")) {
@@ -76,6 +84,9 @@ public class Player : NetworkBehaviour
                 $"Hit by {collision.gameObject.name} " +
                 $"owned by {ownerId}");
            
+            //The "player other" line isn't working, and keeping it in is actually causing the destroy to not work, so I've commented it out.
+            //Presumably if you see this comment I haven't figured out how to fix this.
+
            // Player other = NetworkManager.Singleton.ConnectedClients[ownerId].PlayerObject.GetComponent<Player>();
            // other.ScoreNetVar.Value += 1;
             
