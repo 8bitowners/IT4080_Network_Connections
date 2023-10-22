@@ -5,11 +5,12 @@ using Unity.Netcode;
 
 public class Player : NetworkBehaviour
 {
-     public float movementSpeed = 50f;
-    public float rotationSpeed = 130f;
 
     public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>(Color.blue);
+    public BulletSpawner bulletSpawner; 
 
+     public float movementSpeed = 50f;
+    public float rotationSpeed = 130f;
     private Camera playerCamera; 
     private GameObject playerBody;
 
@@ -42,6 +43,10 @@ public class Player : NetworkBehaviour
     private void Update() {
         if (IsOwner) {
             OwnerHandleInput();
+            if (Input.GetButtonDown("Fire1")) {
+                NetworkHelper.Log("Requesting Fire");
+                FireServerRpc();
+            }
         } 
     }
 
@@ -68,6 +73,13 @@ public class Player : NetworkBehaviour
     private void MoveServerRpc(Vector3 movement, Vector3 rotation) {
         transform.Translate(movement);
         transform.Rotate(rotation);
+    }
+
+   
+    [ServerRpc]
+    private void FireServerRpc() {
+        NetworkHelper.Log("Fire");
+        bulletSpawner.Fire();
     }
 
     // Rotate around the y axis when shift is not pressed
