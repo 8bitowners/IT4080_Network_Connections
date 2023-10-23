@@ -7,13 +7,16 @@ public class PowerUpSpawner : NetworkBehaviour
 {
     public BasePowerUp powerUp; 
     public float spawnDelay = 3.0f; 
+    
 
 
 private BasePowerUp spawnedPowerUp;
 private float timeSinceDespawn = 0f; 
 
     private void Start() {
-     //   SpawnPowerUp(); Used for testing purposes (not that I need to tell you that when I'm using your tests)
+        if(IsServer) {
+            SpawnPowerUp(); 
+        }
     }
 
     private void Update() {
