@@ -73,9 +73,9 @@ public class Arena1Game : NetworkBehaviour
         }     
     }
      private Vector3[] healthPickupPositions = new Vector3[] {
-        new Vector3(-21f, 12f, -47f), 
-        new Vector3(-11f, 12f, -30f),
-        new Vector3(10f, 12f, -5f)
+        new Vector3(-60f, 12f, -47f), 
+        new Vector3(-45f, 12f, -45f),
+        new Vector3(10f, 12f, 50f)
      };
     
     private Vector3 HPPickupNextPosition() {
