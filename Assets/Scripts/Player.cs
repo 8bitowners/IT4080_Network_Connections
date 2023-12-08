@@ -8,6 +8,8 @@ public class Player : NetworkBehaviour
 
     public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>(Color.blue);
     public NetworkVariable<int> ScoreNetVar = new NetworkVariable<int>(0);
+
+    public NetworkVariable<int> playerHP = new NetworkVariable<int>();
     public BulletSpawner bulletSpawner; 
 
      public float movementSpeed = 50f;
@@ -53,6 +55,7 @@ public class Player : NetworkBehaviour
         NetworkHelper.Log(this, "OnNetworkSpawn");
         NetworkInit();
         base.OnNetworkSpawn();
+        playerHP.Value = 100;
     }
 
     private void ClientOnScoreValueChanged(int old, int current) {
@@ -68,11 +71,16 @@ public class Player : NetworkBehaviour
     }
 
     private void OnTriggerEnter(Collider other) {
-        if(IsServer) {
-            if(other.CompareTag("power_up")) {
-                other.GetComponent<BasePowerUp>().ServerPickUp(this);
-            }
+        if(!IsServer) {
+            return;
+        }     
+        if(other.gameObject.CompareTag("power_up")) {
+            other.GetComponent<BasePowerUp>().ServerPickUp(this);
         }
+       /*else if(other.gameObject.CompareTag("health")){
+            Debug.Log("Player HP+");
+            playerHP.Value += 50;
+        }*/
     }
 
     private void ServerHandleCollision(Collision collision) {
@@ -83,19 +91,25 @@ public class Player : NetworkBehaviour
             NetworkHelper.Log(this, 
                 $"Hit by {collision.gameObject.name} " +
                 $"owned by {ownerId}");
-           
-            //The "player other" line isn't working, and keeping it in is actually causing the destroy to not work, so I've commented it out.
-            //Presumably if you see this comment I haven't figured out how to fix this.
 
             Player other = NetworkManager.Singleton.ConnectedClients[ownerId].PlayerObject.GetComponent<Player>();
-           
-           // This remains commented out not because it didn't work, but because the above line doesn't right now, and I want to minimize potential issues
-           // other.ScoreNetVar.Value += 1;
-            
+
+            //Debug.Log("====Score====");
+            Debug.Log("Player dmg "+ other.GetComponent<NetworkObject>().OwnerClientId);
+
+            NetworkManager.Singleton.ConnectedClients[other.GetComponent<NetworkObject>().OwnerClientId].PlayerObject.GetComponent<NetwrokPlayerData>().score.Value +=1;
+            playerHP.Value -= 10; 
+            Debug.Log("Player HP " + playerHP.Value);
+        
+            other.ScoreNetVar.Value += 1;
+            Debug.Log("Player Score " + other.ScoreNetVar);
             Destroy(collision.gameObject);
             
         }
-        
+        else if(collision.gameObject.CompareTag("health")){
+            Debug.Log("Player HP+");
+            playerHP.Value += 50;
+        }
     }
 
     public void OnPlayerColorChanged(Color previous, Color current) {
@@ -155,4 +169,5 @@ public class Player : NetworkBehaviour
         } */
         return moveVect;
     }
+
 }

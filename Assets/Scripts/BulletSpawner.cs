@@ -31,6 +31,6 @@ public class BulletSpawner : NetworkBehaviour
         Destroy(newBullet.gameObject, 3);
 
         shotCountDown = timeBetweenBullets; 
-    }
+    } 
 
 }

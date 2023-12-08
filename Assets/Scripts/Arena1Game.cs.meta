@@ -3,7 +3,11 @@ guid: c5a095caaafa0d147ba263c6bd38403b
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - playerPrefab: {instanceID: 0}
+  - hostPrefab: {instanceID: 0}
+  - arenaCamera: {instanceID: 0}
+  - healthPickups: {fileID: 6255007442734618792, guid: fa384e562bff211418b72efbf5ebc1f4, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -10,8 +10,11 @@ public class Arena1Game : NetworkBehaviour
 
     public Player hostPrefab;
     public Camera arenaCamera;
+    public GameObject healthPickups;
 
       private int positionIndex = 0;
+      private int hpPositionIndex = 0;
+    
     private Vector3[] startPositions = new Vector3[]
     {
         new Vector3(2, 2, 0),
@@ -35,6 +38,7 @@ public class Arena1Game : NetworkBehaviour
         arenaCamera.GetComponent<AudioListener>().enabled = !IsClient;
         if (IsServer) {
              SpawnPlayers();
+             SpawnHealthPickups();
         }
     }
 
@@ -46,7 +50,7 @@ public class Arena1Game : NetworkBehaviour
         }
         return pos;
     }
-
+    
     private Color NextColor() {
         Color newColor = playerColors[colorIndex];
         colorIndex += 1;
@@ -66,22 +70,28 @@ public class Arena1Game : NetworkBehaviour
                 Quaternion.identity);
             playerSpawn.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
             playerSpawn.playerColorNetVar.Value = NextColor();
-        }
-
-            //I feel like there was a better to way to get it to only alter the host, but I couldn't find it and this worked
-           /* if (clientId == 0) {
-                Player playerSpawn = Instantiate(hostPrefab, NextPosition(), Quaternion.identity);
-                playerSpawn.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-                playerSpawn.playerColorNetVar.Value = NextColor(); 
-            }
-            
-            else {
-                Player playerSpawn = Instantiate(playerPrefab, NextPosition(), Quaternion.identity);
-                playerSpawn.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-                playerSpawn.playerColorNetVar.Value = NextColor();
-
-            } */
-            
-        
+        }     
     }
+     private Vector3[] healthPickupPositions = new Vector3[] {
+        new Vector3(-21f, 12f, -47f), 
+        new Vector3(-11f, 12f, -30f),
+        new Vector3(10f, 12f, -5f)
+     };
+    
+    private Vector3 HPPickupNextPosition() {
+        Vector3 pos = healthPickupPositions[hpPositionIndex];
+        hpPositionIndex += 1;
+        if (hpPositionIndex > healthPickupPositions.Length - 1) {
+            hpPositionIndex = 0;
+        }
+        return pos;
+    }
+    
+    private void SpawnHealthPickups() {
+            foreach (Vector3 hpSpawnLoc in healthPickupPositions) {
+                
+                GameObject hpPickup = Instantiate(healthPickups, HPPickupNextPosition(), Quaternion.identity);
+                hpPickup.GetComponent<NetworkObject>().Spawn();
+            }
+        }
 }
